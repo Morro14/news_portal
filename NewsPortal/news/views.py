@@ -37,10 +37,10 @@ Post.objects.create(
 Post.objects.create(
     type='AR',
     head="Will Russia default on its foreign debt for first time in more than 100 years?",
-    text="""Russia faces a payment deadline for two international bonds today – worth $117 million – but it's unclear 
-    whether Moscow will be able to pay. The finance ministry has said its ability to make foreign payments has been 
-    hampered by sanctions. If Russia is unable to make the payments within a 30-day grace period, it will face its 
-    first default on international debt in more than a century. Also today, two fuel depots in western France have 
+    text="""Russia faces a payment deadline for two international bonds today – worth $117 million – but it's unclear
+    whether Moscow will be able to pay. The finance ministry has said its ability to make foreign payments has been
+    hampered by sanctions. If Russia is unable to make the payments within a 30-day grace period, it will face its
+    first default on international debt in more than a century. Also today, two fuel depots in western France have
     been blockaded in protest at high prices. """,
     author=author_2
 )
@@ -86,14 +86,14 @@ comment_4.like(44)
 author_1.update_rating()
 author_2.update_rating()
 
-best_user = Author.objects.all().order_by('rating')[0].user
+best_user = Author.objects.all().order_by('-rating')[0].user
 print(f'Пользователь с наивысшим рейтингом: {best_user.username}')
 
-best_post = Post.objects.all().order_by('rating')[0]
-print(f'Лучшая статья:\n'
-      f'{best_post.objects.values("create_time", "author", "head"), best_post.preview()}'
-      f'')
+best_post = Post.objects.all().order_by('-rating')[0]
+Post.objects.all().order_by('-rating').values('create_time', 'author__user__username', 'rating','text')[0]
+print(best_post.preview())
 
-print(f'Комментарии:\n')
-for c in best_post.comment_set.all():
-    print(c.text)
+best_comment = best_post.comment_set.order_by('-rating')[0]
+best_comment.user.username
+best_comment.rating
+best_comment.text
