@@ -6,8 +6,8 @@ from news.models import *
 User.objects.create_user('Bob')
 User.objects.create_user('Alex')
 
-user_1 = User.objects.get(id=5)
-user_2 = User.objects.get(id=6)
+user_1 = User.objects.get(id=1)
+user_2 = User.objects.get(id=2)
 
 Author.objects.create(user=user_1)
 Author.objects.create(user=user_2)
