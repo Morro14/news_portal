@@ -8,6 +8,8 @@ class Category(models.Model):
 
 
 class Post(models.Model):
+    def __str__(self):
+        return f'{self.head[:124:]} {self.create_time}'
     news = "NW"
     article = "AR"
 
@@ -57,6 +59,8 @@ class Comment(models.Model):
 
 
 class Author(models.Model):
+    def __str__(self):
+        return f'{self.user.username}'
     rating = models.FloatField(default=0.0)
     user = models.OneToOneField(User, on_delete=models.CASCADE)
 
