@@ -3,6 +3,7 @@ from django.views.generic import ListView, DetailView, DeleteView, UpdateView, C
 from .models import Post
 from .filters import PostFilter
 from .forms import PostForm, ProfileForm
+from django.contrib.auth.mixins import PermissionRequiredMixin
 
 
 class PostsList(ListView):
@@ -32,17 +33,19 @@ class PostSearch(ListView):
         return context
 
 
-class PostCreateView(CreateView):
+class PostCreateView(CreateView, PermissionRequiredMixin):
     template_name = 'post_create.html'
     form_class = PostForm
     context_object_name = 'post_create'
     success_url = '/news/'
+    permission_required = ('news.add_post',)
 
 
-class PostUpdateView(UpdateView):
+class PostUpdateView(UpdateView, PermissionRequiredMixin):
     template_name = 'post_create.html'
     form_class = PostForm
     context_object_name = 'post_update'
+    permission_required = ('news.change_post',)
 
     def get_object(self, **kwargs):
         id = self.kwargs.get('pk')
