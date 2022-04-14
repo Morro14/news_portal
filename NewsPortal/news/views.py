@@ -1,7 +1,8 @@
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import ListView, DetailView, DeleteView, UpdateView, CreateView
 from .models import Post
 from .filters import PostFilter
-from .forms import PostForm
+from .forms import PostForm, ProfileForm
 
 
 class PostsList(ListView):
@@ -53,3 +54,12 @@ class PostDeleteView(DeleteView):
     queryset = Post.objects.all()
     success_url = '/news/'
     context_object_name = 'post_delete'
+
+
+class ProfileEdit(UpdateView, LoginRequiredMixin):
+    template_name = 'profile_edit.html'
+    form_class = ProfileForm
+
+
+
+
