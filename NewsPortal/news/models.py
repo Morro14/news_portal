@@ -5,6 +5,7 @@ from django.db.models import Sum
 
 class Category(models.Model):
     name = models.CharField(unique=True, max_length=255)
+    subscribers = models.ForeignKey(User, on_delete=models.CASCADE)
 
 
 class Post(models.Model):
