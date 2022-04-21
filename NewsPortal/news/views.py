@@ -1,9 +1,16 @@
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.shortcuts import redirect
 from django.views.generic import ListView, DetailView, DeleteView, UpdateView, CreateView
-from .models import Post
+from .models import Post, Category
 from .filters import PostFilter
 from .forms import PostForm, ProfileForm
 from django.contrib.auth.mixins import PermissionRequiredMixin
+from django.db.models.signals import post_save
+
+from .signals import notify_users_newpost
+
+post_save.connect(notify_users_newpost, sender=Post)
 
 
 class PostsList(ListView):
@@ -64,8 +71,24 @@ class ProfileEdit(UpdateView, LoginRequiredMixin):
     form_class = ProfileForm
 
 
+class CategoryListView(ListView):
+    model = Category
+    template_name = "category_list.html"
+    context_object_name = "categories"
+    ordering = 'name'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['user_sub'] = self.request.user.category_set
+
+        return context
 
 
+@login_required
+def subscribe_category(request):
+    user_ = request.user
+    category = Category.objects.get(name="Science")
+    if not request.user.category_set.filter(name="Science").exists():
+        category.subscribers.add(user_)
 
-
-
+    return redirect('/news/categories')

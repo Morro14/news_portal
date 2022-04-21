@@ -3,9 +3,22 @@ from django.contrib.auth.models import User
 from django.db.models import Sum
 
 
+#   class Profile(models.Model):
+#       user = models.OneToOneField(User, on_delete=models.CASCADE)
+#       subscriptions = models.ManyToManyField("Category", through="CategoryUser", default=None)
+
+
 class Category(models.Model):
+    def __str__(self):
+        return f'{self.name[:124:]}'
     name = models.CharField(unique=True, max_length=255)
-    subscribers = models.ForeignKey(User, on_delete=models.CASCADE)
+    subscribers = models.ManyToManyField(User)
+
+
+
+#  class CategoryUser(models.Model):
+#      category = models.ForeignKey(Category, on_delete=models.CASCADE)
+#      user = models.ForeignKey(User, on_delete=models.CASCADE)
 
 
 class Post(models.Model):
@@ -23,7 +36,8 @@ class Post(models.Model):
     create_time = models.DateTimeField(auto_now_add=True, auto_created=True)
 
     author = models.ForeignKey("Author", on_delete=models.CASCADE)
-    category = models.ManyToManyField(Category, through="PostCategory", default=None)
+    category = models.ManyToManyField(Category)
+
 
     def like(self, num):
         self.rating += 1.0 * num

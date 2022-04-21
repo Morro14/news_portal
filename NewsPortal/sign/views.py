@@ -6,6 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect
 
 
+
 class BaseRegisterView(CreateView):
     model = User
     form_class = BaseRegisterForm
@@ -18,3 +19,7 @@ def upgrade_me(request):
     if not request.user.groups.filter(name='author').exists():
         author_group.user_set.add(user)
     return redirect('/')
+
+
+
+
