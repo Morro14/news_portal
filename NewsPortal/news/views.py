@@ -1,7 +1,7 @@
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import redirect
-from django.views.generic import ListView, DetailView, DeleteView, UpdateView, CreateView
+from django.views.generic import ListView, DetailView, DeleteView, UpdateView, CreateView, View
 from .models import Post, Category, User
 from .filters import PostFilter
 from .forms import PostForm, ProfileForm
@@ -74,16 +74,17 @@ class CategoryListView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['user_sub'] = self.request.user.category_set
+        context['user_sub'] = self.request.user.category_set.all()
 
         return context
 
 
 @login_required
-def subscribe_category(request):
+def subscribe_category(request, category):
     user_ = request.user
-    category = Category.objects.get(name="Science")
-    if not request.user.category_set.filter(name="Science").exists():
-        category.subscribers.add(user_)
+
+    category_ = Category.objects.get(name=f"{category}")
+    if not request.user.category_set.filter(name=f"{category_}").exists():
+        category_.subscribers.add(user_)
 
     return redirect('/news/categories')

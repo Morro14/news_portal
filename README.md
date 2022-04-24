@@ -1,10 +1,9 @@
 # news_portal
 Django project: News Portal
 
-Подписка на категории /news/categories (пока работает только 
-на категорию "Science").
+Подписка на категории /news/categories.
 
 signals: done
 apscheduler: done
-TODO: доделать подписку
+TODO: доделать подписку/отписку
 

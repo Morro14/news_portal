@@ -16,7 +16,7 @@ Categories
            <tr>
                <td>{{ category.name }}</td>
                {% if user_sub %}
-               <td><button><a href="subscribe/">Подписаться</a></button></td>
+               <td><button><a href="{% url 'subscribe' category.name %}">Подписаться</a></button></td>
                {% else %}
                <td>Вы подписаны</td>
                {% endif %}
