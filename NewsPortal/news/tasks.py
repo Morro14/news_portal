@@ -12,12 +12,13 @@ def send_mails():
     cat = new_posts.values_list('category')
     subscribers = User.objects.filter(category__in=cat)
     emails = subscribers.values_list('email').distinct()
+    email_cat_dict = {}
+    for e in emails:
+        email_cat_dict.update({e[0]: list(User.objects.get(email=e[0]).category_set.all())})
+    emails_list = list(email_cat_dict.keys())
 
-    emails_list = []
-    for email in emails:
-        if email not in emails_list:
-            emails_list.append(email[0])
-    print(emails)
+
+
 #    link = f'http://127.0.0.1:8000/news/{instance.pk}'
     variables = {'new_posts': new_posts, }
     html_content = render_to_string('email_weekly.html', variables)

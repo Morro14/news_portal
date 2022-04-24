@@ -1,10 +1,10 @@
 from django.core.mail import EmailMultiAlternatives
-from django.db.models.signals import post_save, post_delete
+from django.db.models.signals import post_save, post_delete, post_init
 from django.dispatch import receiver
 from django.template.loader import render_to_string
 from datetime import datetime
 
-from .models import Post
+from .models import Post, User
 
 
 @receiver(post_save, sender=Post)
@@ -31,7 +31,6 @@ def notify_users_newpost(sender, instance, created, **kwargs):
         to=email,
     )
     msg.attach_alternative(html_content, "text/html")
-
     msg.send()
 
 @receiver(post_delete, sender=Post)
@@ -48,8 +47,27 @@ def notify_user_delete(sender, instance, created, **kwargs):
     )
 
     msg.attach_alternative(html_content, "text/html")
-
     msg.send()
+
+
+@receiver(post_save, sender=User)
+def notify_new_user(sender, instance, created, **kwargs):
+    if created:
+        variables = {'user': instance,}
+        html_content = render_to_string('email_welcome.html', variables)
+        text_content = render_to_string('email_welcome.html', variables)
+        email = instance.email
+        msg = EmailMultiAlternatives(
+           subject=f'Welcome',
+           body=text_content,
+           from_email='i0ann@yandex.ru',
+           to=[email],
+        )
+
+        msg.attach_alternative(html_content, "text/html")
+        msg.send()
+
+    pass
 
 
 

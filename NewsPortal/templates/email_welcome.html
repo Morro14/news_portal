@@ -1,0 +1,15 @@
+{% extends 'flatpages/without_nav.html' %}
+
+{% load custom_filters %}
+
+{% block title %}
+
+<h1>Приветствуем, {{ user.username }}!</h1>
+
+{% endblock title %}
+
+{% block content %}
+<h1>Добро пожаловать на NewsPortal, {{ user.username }}. </h1>
+<hr>
+
+{% endblock content %}

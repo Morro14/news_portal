@@ -2,15 +2,10 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import redirect
 from django.views.generic import ListView, DetailView, DeleteView, UpdateView, CreateView
-from .models import Post, Category
+from .models import Post, Category, User
 from .filters import PostFilter
 from .forms import PostForm, ProfileForm
 from django.contrib.auth.mixins import PermissionRequiredMixin
-from django.db.models.signals import post_save
-
-from .signals import notify_users_newpost
-
-post_save.connect(notify_users_newpost, sender=Post)
 
 
 class PostsList(ListView):
@@ -92,5 +87,3 @@ def subscribe_category(request):
         category.subscribers.add(user_)
 
     return redirect('/news/categories')
-
-
