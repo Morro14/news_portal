@@ -6,24 +6,28 @@ from django.db.models import Sum
 #   class Profile(models.Model):
 #       user = models.OneToOneField(User, on_delete=models.CASCADE)
 #       subscriptions = models.ManyToManyField("Category", through="CategoryUser", default=None)
+class PostCategory(models.Model):
+    post = models.ForeignKey("Post", on_delete=models.CASCADE)
+    category = models.ForeignKey("Category", on_delete=models.CASCADE)
 
 
 class Category(models.Model):
     def __str__(self):
         return f'{self.name[:124:]}'
+
     name = models.CharField(unique=True, max_length=255)
-    subscribers = models.ManyToManyField(User)
+    subscribers = models.ManyToManyField(to=User, through="CategoryUser")
 
 
-
-#  class CategoryUser(models.Model):
-#      category = models.ForeignKey(Category, on_delete=models.CASCADE)
-#      user = models.ForeignKey(User, on_delete=models.CASCADE)
+class CategoryUser(models.Model):
+    category = models.ForeignKey(Category, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
 
 
 class Post(models.Model):
     def __str__(self):
         return f'{self.head[:124:]} {self.create_time}'
+
     news = "NW"
     article = "AR"
 
@@ -36,8 +40,7 @@ class Post(models.Model):
     create_time = models.DateTimeField(auto_now_add=True, auto_created=True)
 
     author = models.ForeignKey("Author", on_delete=models.CASCADE)
-    category = models.ManyToManyField(Category)
-
+    category = models.ManyToManyField(Category, through="PostCategory")
 
     def like(self, num):
         self.rating += 1.0 * num
@@ -51,9 +54,7 @@ class Post(models.Model):
         return self.text[:124:] + "..."
 
 
-class PostCategory(models.Model):
-    post = models.ForeignKey(Post, on_delete=models.CASCADE)
-    category = models.ForeignKey(Category, on_delete=models.CASCADE)
+
 
 
 class Comment(models.Model):
@@ -76,6 +77,7 @@ class Comment(models.Model):
 class Author(models.Model):
     def __str__(self):
         return f'{self.user.username}'
+
     rating = models.FloatField(default=0.0)
     user = models.OneToOneField(User, on_delete=models.CASCADE)
 
@@ -83,6 +85,8 @@ class Author(models.Model):
         post_rating = Post.objects.filter(author=self).aggregate(Sum('rating'))
         comment_rating = self.user.comment_set.all().aggregate(Sum('rating'))
         author_rating = Comment.objects.filter(user=self.user).aggregate(Sum('rating'))
-        self.rating = float(post_rating['rating__sum']) * 3 + float(comment_rating['rating__sum']) + float(author_rating['rating__sum'])
+        self.rating = float(post_rating['rating__sum']) * 3 + float(comment_rating['rating__sum']) + float(
+            author_rating['rating__sum'])
         self.save()
         return self.rating
+

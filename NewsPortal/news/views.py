@@ -92,3 +92,5 @@ def subscribe_category(request):
         category.subscribers.add(user_)
 
     return redirect('/news/categories')
+
+

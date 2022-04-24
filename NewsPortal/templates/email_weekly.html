@@ -1,0 +1,22 @@
+{% extends 'flatpages/without_nav.html' %}
+
+{% load custom_filters %}
+
+{% block title %}
+
+{{ post.head }}
+
+{% endblock title %}
+
+{% block content %}
+<h1>Новые посты для Вас: </h1>
+<hr>
+
+<table>
+    {% for post in new_posts %}
+        <tr>
+            {{ post.text | truncatechars:50 }} <a href="http://127.0.0.1:8000/news/{{post.pk}}">Ссылка</a>
+        </tr>
+    {% endfor %}
+</table>
+{% endblock content %}

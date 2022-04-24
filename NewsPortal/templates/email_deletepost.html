@@ -1,0 +1,14 @@
+{% extends 'flatpages/without_nav.html' %}
+
+{% load custom_filters %}
+
+{% block title %}
+
+Удаление поста
+
+{% endblock title %}
+
+{% block content %}
+<h1>Пост заголовком {{ post.head }} был удален</h1>
+
+{% endblock content %}

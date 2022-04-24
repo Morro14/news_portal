@@ -1,0 +1,14 @@
+{% extends 'flatpages/without_nav.html' %}
+
+{% load custom_filters %}
+
+{% block title %}
+
+{{ post.head }}
+
+{% endblock title %}
+
+{% block content %}
+<h1>Новый пост в категории {{ categories }}</h1>
+{{ post.text | truncatechars:20 }} {{ link }}
+{% endblock content %}
