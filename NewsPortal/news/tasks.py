@@ -1,9 +1,23 @@
 import datetime
-
+from celery import shared_task
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 
 from .models import Post, User
+import time
+
+
+@shared_task
+def hello():
+    time.sleep(10)
+    print("Hello, world!")
+
+
+@shared_task
+def printer(N):
+    for i in range(N):
+        time.sleep(1)
+        print(i+1)
 
 
 def send_mails():
@@ -17,21 +31,18 @@ def send_mails():
         email_cat_dict.update({e[0]: list(User.objects.get(email=e[0]).category_set.all())})
     emails_list = list(email_cat_dict.keys())
 
-
-
-#    link = f'http://127.0.0.1:8000/news/{instance.pk}'
     variables = {'new_posts': new_posts, }
     html_content = render_to_string('email_weekly.html', variables)
     text_content = render_to_string('email_weekly.html', variables)
     msg = EmailMultiAlternatives(
-       subject=f'Новые статьи для Вас',
-       body=text_content,
-       from_email='i0ann@yandex.ru',
-       to=emails_list,
+        subject=f'Новые статьи для Вас',
+        body=text_content,
+        from_email='i0ann@yandex.ru',
+        to=emails_list,
     )
 
-#    msg.attach_alternative(html_content, "text/html")
-    msg.content_subtype = "html"
+    msg.attach_alternative(html_content, "text/html")
+    #    msg.content_subtype = "html"
     msg.send()
 
 

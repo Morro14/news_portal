@@ -175,4 +175,11 @@ EMAIL_HOST_USER = 'i0ann'  # ваше имя пользователя, напр�
 EMAIL_HOST_PASSWORD = 'zntyyhwcyguzbwcs'  # пароль от почты
 EMAIL_USE_SSL = True  # Яндекс использует ssl, подробнее о том, что это, почитайте в дополнительных источниках, но включать его здесь обязательно
 
+#  redis_link = 'redis://:jkCk5kr9UtXktwj39hotyBCIVZar57TG@redis-19979.c14.us-east-1-3.ec2.cloud.redislabs.com:19979'
+
+CELERY_BROKER_URL = os.environ.get("CELERY_BROKER", "redis://redis:6379/0")
+CELERY_RESULT_BACKEND = os.environ.get("CELERY_BROKER", "redis://redis:6379/0")
+#  CELERY_ACCEPT_CONTENT = ['application/json']
+#  CELERY_TASK_SERIALIZER = 'json'
+#  CELERY_RESULT_SERIALIZER = 'json'
 
