@@ -1,24 +1,32 @@
 import datetime
-from celery import shared_task
-from django.core.mail import EmailMultiAlternatives
+from celery import Celery as app, shared_task, schedules, beat
+from celery.schedules import crontab
+from django.core.mail import EmailMultiAlternatives, send_mass_mail
 from django.template.loader import render_to_string
-
+from celery.utils.log import get_task_logger
 from .models import Post, User
+from .email import send_weekly_posts
 import time
 
-
-@shared_task
-def hello():
-    time.sleep(10)
-    print("Hello, world!")
+logger = get_task_logger(__name__)
 
 
 @shared_task
-def printer(N):
-    for i in range(N):
-        time.sleep(1)
-        print(i+1)
+def new_post_mail():
+    pass
 
+
+@shared_task(name="send_weekly_posts_task")
+def weekly_mail(posts):
+    logger.info("Sent weekly posts")
+    return send_weekly_posts()
+
+#   app.conf.beat_schedule = {
+#       'action_every_week': {
+#           'task': 'tasks.send_weekly_posts_task',
+#           'schedule': crontab(),
+#       },
+#   }
 
 def send_mails():
     time_threshold = datetime.datetime.now() - datetime.timedelta(weeks=1)
@@ -44,5 +52,7 @@ def send_mails():
     msg.attach_alternative(html_content, "text/html")
     #    msg.content_subtype = "html"
     msg.send()
+
+
 
 

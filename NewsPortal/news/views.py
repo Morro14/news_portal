@@ -3,11 +3,13 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponse
 from django.shortcuts import redirect
 from django.views.generic import ListView, DetailView, DeleteView, UpdateView, CreateView, View
+
+from .email import send_weekly_posts
 from .models import Post, Category, User
 from .filters import PostFilter
 from .forms import PostForm, ProfileForm
 from django.contrib.auth.mixins import PermissionRequiredMixin
-from .tasks import printer, hello
+from .tasks import hello, add
 
 
 class PostsList(ListView):
@@ -92,8 +94,6 @@ def subscribe_category(request, category):
     return redirect('/news/categories')
 
 
-class IndexView(View):
-    def get(self, request):
-        printer.delay(10)
-        hello.delay()
-        return HttpResponse('Hello!')
+
+        
+
