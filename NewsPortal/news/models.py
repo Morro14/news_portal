@@ -1,14 +1,17 @@
 from django.db import models
-from django.contrib.auth.models import User
 from django.db.models import Sum
+from django.contrib.auth.models import AbstractUser
 
 
 #   class Profile(models.Model):
 #       user = models.OneToOneField(User, on_delete=models.CASCADE)
 #       subscriptions = models.ManyToManyField("Category", through="CategoryUser", default=None)
-class PostCategory(models.Model):
-    post = models.ForeignKey("Post", on_delete=models.CASCADE)
-    category = models.ForeignKey("Category", on_delete=models.CASCADE)
+#   class PostCategory(models.Model):
+#       post = models.ForeignKey("Post", on_delete=models.CASCADE)
+#       category = models.ForeignKey("Category", on_delete=models.CASCADE)
+
+class User(AbstractUser):
+    pass
 
 
 class Category(models.Model):
@@ -16,12 +19,12 @@ class Category(models.Model):
         return f'{self.name[:124:]}'
 
     name = models.CharField(unique=True, max_length=255)
-    subscribers = models.ManyToManyField(to=User, through="CategoryUser")
+    subscribers = models.ManyToManyField(User, blank=True)
 
 
-class CategoryUser(models.Model):
-    category = models.ForeignKey(Category, on_delete=models.CASCADE)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+#   class CategoryUser(models.Model):
+#       category = models.ForeignKey(Category, on_delete=models.CASCADE)
+#       user = models.ForeignKey(User, on_delete=models.CASCADE)
 
 
 class Post(models.Model):
@@ -40,7 +43,7 @@ class Post(models.Model):
     create_time = models.DateTimeField(auto_now_add=True, auto_created=True)
 
     author = models.ForeignKey("Author", on_delete=models.CASCADE)
-    category = models.ManyToManyField(Category, through="PostCategory")
+    cat = models.ManyToManyField(Category)
 
     def like(self, num):
         self.rating += 1.0 * num
@@ -52,9 +55,6 @@ class Post(models.Model):
 
     def preview(self):
         return self.text[:124:] + "..."
-
-
-
 
 
 class Comment(models.Model):
@@ -89,4 +89,3 @@ class Author(models.Model):
             author_rating['rating__sum'])
         self.save()
         return self.rating
-

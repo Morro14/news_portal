@@ -9,7 +9,6 @@ from .models import Post, Category, User
 from .filters import PostFilter
 from .forms import PostForm, ProfileForm
 from django.contrib.auth.mixins import PermissionRequiredMixin
-from .tasks import hello, add
 
 
 class PostsList(ListView):

@@ -3,13 +3,14 @@ from django.db.models.signals import post_save, post_delete, post_init
 from django.dispatch import receiver
 from django.template.loader import render_to_string
 from datetime import datetime
+from .tasks import new_post_mail_task
 
 from .models import Post, User
 
 
 @receiver(post_save, sender=Post)
 def notify_users_newpost(sender, instance, created, **kwargs):
-    categories = instance.category.all()
+    categories = instance.cat.all()
     subscribers = []
     email = []
 
@@ -32,6 +33,7 @@ def notify_users_newpost(sender, instance, created, **kwargs):
     )
     msg.attach_alternative(html_content, "text/html")
     msg.send()
+
 
 @receiver(post_delete, sender=Post)
 def notify_user_delete(sender, instance, created, **kwargs):
@@ -68,6 +70,13 @@ def notify_new_user(sender, instance, created, **kwargs):
         msg.send()
 
     pass
+
+
+@receiver(post_save, sender=Post)
+def new_post_signal(instance, created, **kwargs):
+    if created:
+        new_post_mail_task(post=instance)
+
 
 
 
