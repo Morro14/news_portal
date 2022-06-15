@@ -66,6 +66,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
+
 ]
 
 ROOT_URLCONF = 'project.urls'
@@ -110,6 +112,17 @@ DATABASES = {
                 #        "HOST": os.environ.get("SQL_HOST", "localhost"),
                 #        "PORT": os.environ.get("SQL_PORT", "5432"),
                 }
+}
+
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
+        'LOCATION': os.path.join(BASE_DIR, 'cache_files'), # Указываем, куда будем сохранять кэшируемые файлы! Не
+        # забываем создать папку cache_files внутри папки с manage.py!
+        'TIMEOUT': 30,
+
+    }
 }
 
 # Password validation

@@ -1,5 +1,9 @@
 <!DOCTYPE html>
+
+{% load cache %}
+
 <html lang="en">
+    {% cache 120 header %}
     <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
@@ -11,6 +15,7 @@
         <!-- Core theme CSS (includes Bootstrap)-->
         <link href="{% static 'css/styles.css' %}" rel="stylesheet" />
     </head>
+    {% endcache %}
     <body>
         <!-- Responsive navbar-->
 
