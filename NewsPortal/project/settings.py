@@ -9,18 +9,22 @@ https://docs.djangoproject.com/en/4.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.0/ref/settings/
 """
-
+from dotenv import load_dotenv
 from pathlib import Path
 import os
+
+load_dotenv()
+env_path = Path('.') / '.env'
+load_dotenv(dotenv_path=env_path)
+
+DEFAULT_FROM_EMAIL = os.getenv("EMAIL")
+SECRET_KEY = os.getenv("SECRET_KEY")
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-w@l5*ju%@&l40+-)#sr%t2z52nn1!z9+n99c-l1l@+z5@hqm*e'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -53,7 +57,7 @@ INSTALLED_APPS = [
 AUTH_USER_MODEL = 'news.User'
 APSCHEDULER_DATETIME_FORMAT = "N j, Y, f:s a"
 APSCHEDULER_RUN_NOW_TIMEOUT = 25
-DEFAULT_FROM_EMAIL = 'i0ann@yandex.ru'
+
 #  EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 SITE_ID = 1
@@ -66,7 +70,6 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-
 
 ]
 
@@ -103,22 +106,21 @@ WSGI_APPLICATION = 'project.wsgi.application'
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
 DATABASES = {
-    'default': {'ENGINE': 'django.db.backends.sqlite3',
-                'NAME': BASE_DIR / 'db.sqlite3',
-                #        "ENGINE": os.environ.get("SQL_ENGINE", "django.db.backends.sqlite3"),
-                #        "NAME": os.environ.get("SQL_DATABASE", os.path.join(BASE_DIR, "db.sqlite3")),
-                #        "USER": os.environ.get("SQL_USER", "user"),
-                #        "PASSWORD": os.environ.get("SQL_PASSWORD", "password"),
-                #        "HOST": os.environ.get("SQL_HOST", "localhost"),
-                #        "PORT": os.environ.get("SQL_PORT", "5432"),
+    'default': {#   'ENGINE': 'django.db.backends.sqlite3',
+                #   'NAME': BASE_DIR / 'db.sqlite3',
+                'ENGINE': 'django.db.backends.postgresql',
+                'NAME': 'postgres',
+                'USER': 'postgres',
+                'PASSWORD': 'example',
+                'HOST': 'localhost',
+                'PORT': '5432',
                 }
 }
-
 
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
-        'LOCATION': os.path.join(BASE_DIR, 'cache_files'), # Указываем, куда будем сохранять кэшируемые файлы! Не
+        'LOCATION': os.path.join(BASE_DIR, 'cache_files'),  # Указываем, куда будем сохранять кэшируемые файлы! Не
         # забываем создать папку cache_files внутри папки с manage.py!
         'TIMEOUT': 30,
 
@@ -181,22 +183,112 @@ ACCOUNT_USERNAME_REQUIRED = False
 
 ACCOUNT_FORMS = {'signup': 'sign.models.BasicSignupForm'}
 
-EMAIL_HOST = 'smtp.yandex.ru'  # адрес сервера Яндекс-почты для всех один и тот же
-EMAIL_PORT = 465  # порт smtp сервера тоже одинаковый
-EMAIL_HOST_USER = 'i0ann'  # ваше имя пользователя, например, если ваша почта user@yandex.ru, то сюда надо писать user, иными словами, это всё то что идёт до собаки
-EMAIL_HOST_PASSWORD = 'zntyyhwcyguzbwcs'  # пароль от почты
-EMAIL_USE_SSL = True  # Яндекс использует ssl, подробнее о том, что это, почитайте в дополнительных источниках, но включать его здесь обязательно
+EMAIL_HOST = os.getenv("EMAIL_HOST")
+EMAIL_PORT = 465
+EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
+EMAIL_USE_SSL = True
 
-redis_link = 'redis://:jkCk5kr9UtXktwj39hotyBCIVZar57TG@redis-19979.c14.us-east-1-3.ec2.cloud.redislabs.com:19979/0'
+#   redis_link = 'redis://:jkCk5kr9UtXktwj39hotyBCIVZar57TG@redis-19979.c14.us-east-1-3.ec2.cloud.redislabs.com:19979/0'
 
-#  CELERY_RESULT_BACKEND = os.environ.get("CELERY_BROKER", redis_link)
-#  CELERY_BROKER_URL = os.environ.get("CELERY_BROKER", redis_link)
+CELERY_BROKER_URL = os.environ.get("CELERY_BROKER", "redis://localhost:6379/0")
+CELERY_RESULT_BACKEND = os.environ.get("CELERY_BACKEND", "redis://localhost:6379/0")
 
-CELERY_BROKER_URL = os.environ.get("CELERY_BROKER", "redis://127.0.0.1:6379/0")
-CELERY_RESULT_BACKEND = os.environ.get("CELERY_BACKEND", "redis://127.0.0.1:6379/0")
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'style': '{',
+    'formatters': {
+        'simple': {
+            'format': '{levelname} {message}',
+            'style': '{',
+        },
+        'general': {
+            'format': '{levelname} {asctime} {module} {message}',
+            'style': '{'
+        },
+        'error': {
+            'format': '{levelname} {asctime} {module} {message} {pathname} {exc_info}',
+            'style': '{'
+        },
+    },
 
-#  CELERY_ACCEPT_CONTENT = ['application/json']
-#  CELERY_TASK_SERIALIZER = 'json'
-#  CELERY_RESULT_SERIALIZER = 'json'
+    'filters': {
+        'require_debug_true': {
+            '()': 'django.utils.log.RequireDebugTrue', },
+        'require_debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse',
+        }
 
+    },
 
+    'handlers': {
+        'console': {
+            'level': 'INFO',
+            'filters': ['require_debug_true'],
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple'
+        },
+        'mail_admins': {
+            'level': 'ERROR',
+            'filters': ['require_debug_false'],
+            'class': 'django.utils.log.AdminEmailHandler',
+            'formatter': 'error'
+        },
+        'general': {
+            'level': 'INFO',
+            'filters': ['require_debug_true'],
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(BASE_DIR, 'logs', 'general.log'),
+            'formatter': 'general'
+        },
+        'security': {
+            'level': 'INFO',
+            'filters': ['require_debug_true'],
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(BASE_DIR, 'logs', 'security.log'),
+            'formatter': 'general'
+        },
+        'errors': {
+            'level': 'ERROR',
+            'filters': ['require_debug_true'],
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(BASE_DIR, 'logs', 'errors.log'),
+            'formatter': 'error'
+
+        }
+    },
+    'loggers': {
+        'django.security': {
+            'handlers': ['general'],
+            'propagate': False,
+
+        },
+        'django': {
+            'handlers': ['general'],
+            'propagate': True,
+            'level': 'INFO'
+        },
+        'django.request': {
+            'handlers': ['errors', 'mail_admins'],
+            'level': 'ERROR',
+            'propagate': False,
+        },
+        'django.server': {
+            'handlers': ['errors', 'mail_admins'],
+            'level': 'ERROR',
+            'propagate': False,
+        },
+        'django.db_backends': {
+            'handlers': ['errors'],
+            'level': 'ERROR',
+            'propagate': False,
+        },
+        'django.template': {
+            'handlers': ['errors'],
+            'level': 'ERROR',
+            'propagate': False,
+        },
+
+    }
+}
