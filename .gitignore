@@ -1,5 +1,5 @@
 /.idea
 /venv
 **/__pycache__
-NewsPortal/.env
-db.json
+*.env
+NewsPortal/db.json
